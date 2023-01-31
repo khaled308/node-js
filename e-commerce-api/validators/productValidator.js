@@ -19,7 +19,6 @@ export const createProductValidator = [
     .isLength({ min: 10 })
     .withMessage("description is required"),
 
-  check("coverImage").notEmpty().withMessage("Cover image is required"),
   check("category")
     .isMongoId()
     .withMessage("Category not Exist")

@@ -1,9 +1,10 @@
 import mongoose from "mongoose";
 import { hash } from "bcrypt";
+import crypto from "crypto";
 
 const userSchema = new mongoose.Schema(
   {
-    fullName: {
+    name: {
       type: String,
       required: true,
       trim: true,
@@ -20,32 +21,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    orders: [
-      {
-        type: mongoose.Types.ObjectId,
-        ref: "Order",
-      },
-    ],
-    wishLists: [
-      {
-        type: mongoose.Types.ObjectId,
-        ref: "WishList",
-      },
-    ],
+    phone: String,
+    profileImage: String,
     isAdmin: {
       type: Boolean,
       default: false,
     },
-    shippingAddress: {
-      firstName: { type: String },
-      lastName: { type: String },
-      city: { type: String },
-      address: { type: String },
-      province: { type: String },
-      postalCode: { type: String },
-      country: { type: String },
-      phone: { type: String },
-    },
+    passwordResetToken: String,
+    passwordResetExpires: Date,
   },
   { timestamps: true }
 );
@@ -54,6 +37,17 @@ userSchema.pre("save", async function (next) {
   this.password = await hash(this.password, 10);
   next();
 });
+
+userSchema.methods.createPasswordResetToken = function () {
+  const passwordToken = crypto.randomBytes(32).toString("hex");
+  this.passwordResetToken = crypto
+    .createHash("sha256")
+    .update(passwordToken)
+    .digest("hex");
+  this.passwordResetExpires = Date.now() + 1000 * 60 * 10;
+
+  return passwordToken;
+};
 
 const User = mongoose.model("User", userSchema);
 

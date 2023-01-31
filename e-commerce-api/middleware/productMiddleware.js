@@ -1,6 +1,7 @@
 import slugify from "slugify";
 import uploadToCloud from "../utils/uploadToCloud.js";
 import fs from "fs";
+import AppError from "../utils/AppError.js";
 
 const prepareSchema = (data) => {
   const keys = [
@@ -31,7 +32,7 @@ const uploadImages = async (req) => {
   );
   const images = [];
 
-  for (let img of req.files.images) {
+  for (let img of req.files.images || []) {
     const temp = await uploadToCloud("uploads/" + img.filename, cloudFolder);
     images.push(temp.secure_url);
   }
@@ -43,6 +44,11 @@ const uploadImages = async (req) => {
 const createProductData = async (req, res, next) => {
   req.data = prepareSchema(req.body);
   req.data.slug = slugify(req.body.name);
+
+  if (!req.files.coverImage) {
+    fs.rm("uploads", { recursive: true }, (err) => console.log(err));
+    return next(new AppError("Cover Image is required"));
+  }
 
   await uploadImages(req);
   fs.rm("uploads", { recursive: true }, (err) => console.log(err));

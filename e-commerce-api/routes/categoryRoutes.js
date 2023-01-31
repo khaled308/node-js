@@ -16,12 +16,14 @@ import {
   updateCategoryValidator,
 } from "../validators/categoryValidator.js";
 import { imagesProcess, upload } from "../middleware/file-upload.js";
+import { isAdmin } from "../middleware/auth.js";
 
 const categoryRoutes = Router();
 
 categoryRoutes
   .route("/")
   .post(
+    isAdmin,
     upload.single("image"),
     imagesProcess,
     createCategoryValidator,
@@ -33,8 +35,8 @@ categoryRoutes
 categoryRoutes
   .route("/:id")
   .get(getCategory)
-  .put(updateCategoryValidator, updateCategoryData, updateCategory)
-  .delete(deleteCategory);
+  .put(isAdmin, updateCategoryValidator, updateCategoryData, updateCategory)
+  .delete(isAdmin, deleteCategory);
 
 categoryRoutes.get("/:id/subcategories", getSubCategories);
 export default categoryRoutes;

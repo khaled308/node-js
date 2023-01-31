@@ -15,12 +15,14 @@ import {
   updateBrandValidator,
 } from "../validators/brandValidator.js";
 import { imagesProcess, upload } from "../middleware/file-upload.js";
+import { isAdmin } from "../middleware/auth.js";
 
 const brandRoutes = Router();
 
 brandRoutes
   .route("/")
   .post(
+    isAdmin,
     upload.single("image"),
     imagesProcess,
     createBrandValidator,
@@ -32,6 +34,6 @@ brandRoutes
 brandRoutes
   .route("/:id")
   .get(getBrand)
-  .put(updateBrandValidator, updateBrandData, updateBrand)
-  .delete(deleteBrand);
+  .put(isAdmin, updateBrandValidator, updateBrandData, updateBrand)
+  .delete(isAdmin, deleteBrand);
 export default brandRoutes;
