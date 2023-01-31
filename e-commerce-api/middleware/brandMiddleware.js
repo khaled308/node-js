@@ -1,7 +1,7 @@
 import slugify from "slugify";
 
 const prepareSchema = (data) => {
-  const keys = ["name", "image", "parentId"];
+  const keys = ["name", "image"];
   const res = {};
 
   for (let key of keys) {
@@ -11,19 +11,19 @@ const prepareSchema = (data) => {
   return res;
 };
 
-const createCategoryData = (req, res, next) => {
+const createBrandData = (req, res, next) => {
   req.data = prepareSchema(req.body);
 
   req.data.slug = slugify(req.body.name);
   next();
 };
 
-const updateCategoryData = (req, res, next) => {
+const updateBrandData = (req, res, next) => {
   req.data = prepareSchema(req.body);
 
-  if (req.data.name) req.data.slug = req.data.name;
+  if (req.data.name) req.data.slug = slugify(req.data.name);
 
   next();
 };
 
-export { createCategoryData, updateCategoryData };
+export { createBrandData, updateBrandData };

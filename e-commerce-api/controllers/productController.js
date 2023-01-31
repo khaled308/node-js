@@ -1,10 +1,18 @@
-import expressAsyncHandler from "express-async-handler";
 import Product from "../models/Product.js";
+import {
+  create,
+  deleteItem,
+  getAll,
+  getOne,
+  update,
+} from "../utils/controllerFactory.js";
 
-const getAllProducts = expressAsyncHandler(async (req, res) => {
-  const products = await Product.find();
+export const createProduct = create(Product);
 
-  res.send(products);
-});
+export const getProducts = getAll(Product);
 
-export { getAllProducts };
+export const getProduct = getOne(Product);
+
+export const updateProduct = update(Product);
+
+export const deleteProduct = deleteItem(Product);

@@ -12,6 +12,11 @@ const productSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    slug: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     brand: {
       type: mongoose.Types.ObjectId,
       ref: "Brand",
@@ -20,16 +25,7 @@ const productSchema = new mongoose.Schema(
       type: mongoose.Types.ObjectId,
       ref: "Category",
     },
-    sizes: {
-      type: [String],
-      enum: ["S", "M", "L", "XL", "XXL"],
-    },
     colors: [String],
-    user: {
-      type: mongoose.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
     images: [String],
     coverImage: {
       type: String,
@@ -38,12 +34,15 @@ const productSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    reviews: [
-      {
-        type: mongoose.Types.ObjectId,
-        ref: "Review",
-      },
-    ],
+    rating: {
+      type: Number,
+      min: 1,
+      max: 5,
+    },
+    ratingQty: {
+      type: Number,
+      default: 0,
+    },
     quantity: {
       type: Number,
       required: true,
@@ -55,6 +54,11 @@ const productSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+productSchema.pre("find", function (next) {
+  this.populate({ path: "category", select: "name" });
+  next();
+});
 
 const Product = mongoose.model("Product", productSchema);
 
